@@ -1,0 +1,200 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+from selenium.webdriver.common.keys import Keys
+
+import pandas as pd
+service = Service('chromedriver')
+service.start()
+
+driver = webdriver.Remote(service.service_url)
+driver.get("https://app.cpcbccr.com/AQI_India/")
+
+from selenium.webdriver.common.keys import Keys
+mon=[]
+day=[]
+hr=[]
+aqi=[]
+exc=[]
+for i in ['Aug','Sep','Oct','Nov']:
+    driver.get("https://app.cpcbccr.com/AQI_India/")
+    time.sleep(4)
+    driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+    time.sleep(4)
+    driver.find_element_by_xpath("//th[normalize-space()='December 2020']").click()
+    time.sleep(4)
+    driver.find_element_by_xpath("//span[normalize-space()='{}']".format(i)).click()
+    time.sleep(5)
+    for j in range(1,32):
+        try:
+            j=str(j)
+            driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+            time.sleep(4)
+            driver.find_element_by_xpath("//td[@class='day'][normalize-space()='{}']".format(j)).click()
+            time.sleep(4)    #31
+            print('ravi')
+            driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+            driver.find_element_by_xpath("//input[@id='time']").click()
+            driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+            driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+            for k in range(0,24):
+                if k==0:
+                    time.sleep(5)
+                    try:
+                        a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                    except:
+                        driver.get("https://app.cpcbccr.com/AQI_India/")
+                        time.sleep(4)
+                        driver.get("https://app.cpcbccr.com/AQI_India/")
+                        time.sleep(10)
+                        print("K=0 excep")
+                        driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//th[normalize-space()='December 2020']").click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//span[normalize-space()='{}']".format(i)).click()
+                        time.sleep(5)
+
+                        driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//td[@class='day'][normalize-space()='{}']".format(j)).click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                        #aqi=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                        #print(i+' '+j+' '+aqi)
+                        #aqi=[]
+                        #hr=[]
+                        driver.find_element_by_xpath("//input[@id='time']").click()
+                        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+                        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+                        if k==0:
+                            time.sleep(7)
+                            a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                            mon.append(i)
+                            day.append(j)
+                            aqi.append(a)
+                            hr.append(k)
+                            print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                            continue
+                        driver.find_element_by_xpath("//input[@id='time']").click()
+                        driver.find_element_by_xpath("//a[@data-action='incrementHour']//span[@class='glyphicon glyphicon-chevron-up']").click()
+                        if k!=0:
+                            time.sleep(5)
+                            a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                            mon.append(i)
+                            day.append(j)
+                            aqi.append(a)
+                            hr.append(k)
+                            print('except '+str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                            continue
+
+                    mon.append(i)
+                    day.append(j)
+                    aqi.append(a)
+                    hr.append(k)
+                    print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                    continue
+                driver.find_element_by_xpath("//input[@id='time']").click()
+                driver.find_element_by_xpath("//a[@data-action='incrementHour']//span[@class='glyphicon glyphicon-chevron-up']").click()
+                if k!=0:
+                    time.sleep(5)
+                    try:
+                        a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                    except:
+                        
+                        service = Service('chromedriver')
+                        service.start()
+
+                        driver = webdriver.Remote(service.service_url)
+                        driver.get("https://app.cpcbccr.com/AQI_India/")
+                        time.sleep(4)
+                        print('drive')
+                        driver.get("https://app.cpcbccr.com/AQI_India/")
+                        time.sleep(10)
+                        print('drive')
+                        print("K!=0 excep")
+
+                        driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+                        time.sleep(4)
+                        print('drive3')
+                        driver.find_element_by_xpath("//th[normalize-space()='December 2020']").click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//span[normalize-space()='{}']".format(i)).click()
+                        time.sleep(5)
+
+                        driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//td[@class='day'][normalize-space()='{}']".format(j)).click()
+                        time.sleep(4)
+                        driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                        #aqi=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                        #print(i+' '+j+' '+aqi)
+                        #aqi=[]
+                        #hr=[]
+                        driver.find_element_by_xpath("//input[@id='time']").click()
+                        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+                        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+                        if k==0:
+                            time.sleep(5)
+                            a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                            mon.append(i)
+                            day.append(j)
+                            aqi.append(a)
+                            hr.append(k)
+                            print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                            continue
+                        driver.find_element_by_xpath("//input[@id='time']").click()
+                        driver.find_element_by_xpath("//a[@data-action='incrementHour']//span[@class='glyphicon glyphicon-chevron-up']").click()
+                        if k!=0:
+                            time.sleep(5)
+                            a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                            mon.append(i)
+                            day.append(j)
+                            aqi.append(a)
+                            hr.append(k)
+                            print('except '+str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                            continue
+
+                    mon.append(i)
+                    day.append(j)
+                    aqi.append(a)
+                    hr.append(k)
+                    print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+        except:
+            print("j loop except")
+            print(i)
+            print(j)
+            
+            service = Service('chromedriver')
+            service.start()
+
+            driver = webdriver.Remote(service.service_url)
+            driver.get("https://app.cpcbccr.com/AQI_India/")
+            time.sleep(14)
+            print('j loop')
+            driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+            time.sleep(4)
+            driver.find_element_by_xpath("//th[normalize-space()='December 2020']").click()
+            time.sleep(4)
+            driver.find_element_by_xpath("//span[normalize-space()='{}']".format(i)).click()
+            time.sleep(5)
+            
+            driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+            time.sleep(4)
+            driver.find_element_by_xpath("//td[@class='day'][normalize-space()='{}']".format(j)).click()
+            time.sleep(4)    #31 last
+            driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+            #aqi=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+            #print(i+' '+j+' '+aqi)
+            #aqi=[]
+            #hr=[]
+            driver.find_element_by_xpath("//input[@id='time']").click()
+            driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+            driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+            
+            
+            continue
+            
+df=pd.DataFrame(list(zip(mon,day,hr,aqi)),columns=['Month','Day','Hour','AQI'])
+df.to_excel('jul31.xlsx')
+            

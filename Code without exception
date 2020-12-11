@@ -1,0 +1,62 @@
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+from selenium.webdriver.common.keys import Keys
+
+service = Service('C:/Users/rachamadugu raviteja/Downloads/chromedriver1/chromedriver')
+service.start()
+
+driver = webdriver.Remote(service.service_url)
+driver.get("https://app.cpcbccr.com/AQI_India/")
+
+
+mon=[]
+day=[]
+hr=[]
+aqi=[]
+for i in ['Jun']:
+    driver.get("https://app.cpcbccr.com/AQI_India/")
+    time.sleep(4)
+    driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+    time.sleep(4)
+    driver.find_element_by_xpath("//th[normalize-space()='December 2020']").click()
+    time.sleep(4)
+    driver.find_element_by_xpath("//span[normalize-space()='{}']".format(i)).click()
+    time.sleep(5)
+    for j in range(14,31):
+        j=str(j)
+        driver.find_element_by_xpath("//div[@id='date']//i[@class='glyphicon glyphicon-th']").click()
+        time.sleep(4)
+        driver.find_element_by_xpath("//td[@class='day'][normalize-space()='{}']".format(j)).click()
+        time.sleep(4)
+        driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+        #aqi=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+        #print(i+' '+j+' '+aqi)
+        #aqi=[]
+        #hr=[]
+        driver.find_element_by_xpath("//input[@id='time']").click()
+        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+        driver.find_element_by_xpath("//input[@class='bootstrap-timepicker-hour']").send_keys(Keys.BACKSPACE)
+        for k in range(0,24):
+            if k==0:
+                time.sleep(7)
+                a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                mon.append(i)
+                day.append(j)
+                aqi.append(a)
+                hr.append(k)
+                print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+                continue
+            driver.find_element_by_xpath("//input[@id='time']").click()
+            driver.find_element_by_xpath("//a[@data-action='incrementHour']//span[@class='glyphicon glyphicon-chevron-up']").click()
+            if k!=0:
+                time.sleep(7)
+                a=driver.find_element_by_xpath("//div[@class='panel panel-default aqi-panel']//div[@id='aqi-meter']//*[local-name()='svg']//*[name()='text'][2]/*[name()='tspan'][1]").text
+                mon.append(i)
+                day.append(j)
+                aqi.append(a)
+                hr.append(k)
+                print(str(i)+' day: '+str(j)+' hour: '+str(k)+' aqi: '+str(a))
+df=pd.DataFrame(list(zip(mon,day,hr,aqi)),columns=['Month','Day','Hour','AQI'])
+df.to_excel("E:\Jun12.xlsx")
